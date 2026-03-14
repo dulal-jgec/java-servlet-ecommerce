@@ -1,0 +1,46 @@
+package in.sp.backend.dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+import in.sp.backend.model.User;
+
+public class UserDao {
+
+    private Connection con;
+    private PreparedStatement pst;
+    private ResultSet rs;
+
+    public UserDao(Connection con) {
+        this.con = con;
+    }
+
+    public User userLogin(String email, String password) {
+
+        User user = null;
+
+        try {
+
+            String query = "SELECT * FROM users WHERE email=? AND password=?";
+            pst = this.con.prepareStatement(query);
+            pst.setString(1, email);
+            pst.setString(2, password);
+
+            rs = pst.executeQuery();
+
+            if (rs.next()) {
+                user = new User();
+                user.setId(rs.getInt("id"));
+                user.setName(rs.getString("name"));
+                user.setEmail(rs.getString("email"));
+                user.setPassword(rs.getString("password"));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return user;
+    }
+}
